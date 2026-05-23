@@ -1,0 +1,17 @@
+{
+  "name": "react-debug-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-flow": "^7.27.1",
+    "flow-remove-types": "^2.314.0",
+    "hermes-parser": "^0.36.1",
+    "vite": "^6.4.2"
+  }
+}
