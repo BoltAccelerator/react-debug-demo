@@ -10,6 +10,7 @@ const PAIRS = [
   ['packages/react-dom/src',          'react-dom/src'],
   ['packages/react-dom-bindings/src', 'react-dom-bindings/src'],
   ['packages/react-reconciler/src',   'react-reconciler/src'],
+  ['packages/react-client/src',       'react-client/src'],
   ['packages/shared',                 'shared'],
   ['packages/scheduler/src',          'scheduler/src'],
 ];
@@ -51,12 +52,21 @@ function stripFlowFlowTypeDecl(src) {
 }
 
 function stripFlowDeclareBlock(src) {
+  // shared/isArray.js opens with a `declare function isArray<T>(…): v is …;`
+  // ambient declaration. flow-remove-types can't reason about TS-style
+  // `v is X` predicates inside Flow, so we excise just the declare block
+  // (from `declare function isArray<` to its terminating `;`) and keep the
+  // real implementation that follows.
   const open = src.indexOf("declare function isArray<");
-  const foot = src.indexOf("export default isArray;");
-  if (open >= 0 && foot >= 0 && foot > open) {
-    return src.slice(0, open) + src.slice(foot);
-  }
-  return src;
+  if (open < 0) return src;
+  // Find the end of the declare statement: the first `;` that isn't inside
+  // brackets. Simpler heuristic: the line containing `: v is`'s terminating
+  // `;` — locate the closing `;` after the `v is …` predicate.
+  const predicate = src.indexOf("v is", open);
+  if (predicate < 0) return src;
+  const semi = src.indexOf(";", predicate);
+  if (semi < 0) return src;
+  return src.slice(0, open) + src.slice(semi + 1);
 }
 
 function stripFlowSchedulerNativeDecl(src) {

@@ -51,4 +51,13 @@ function App() {
 // ── 3. 挂载 ──────────────────────────────────────────────────────
 // ➋ 这里 F11 进入 createRoot → updateContainer → scheduleUpdateOnFiber
 const container = document.getElementById('app');
-createRoot(container).render(createElement(App));
+
+// ── 断点 A：createRoot 之前 ──
+// F11 进 createRoot → createContainer → createFiberRoot
+debugger;
+const root = createRoot(container);
+
+// ── 断点 B：render 之前 ──
+// F11 进 render → updateContainer → scheduleUpdateOnFiber → performWorkOnRoot
+debugger;
+root.render(createElement(App));
